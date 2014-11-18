@@ -29,23 +29,72 @@ Payload's structure is as follows:
 
 Currently only the `Cmd` and `Params` are required to execute a new command.  
 
-##### Sample commands
+##### Request
 
-* Sleep
+    {
+        cmd: "/sbin/ping",
+        params: [ "-c", "5", "google.com" ],
+    }
+
+##### Response
+
+    {
+        id: "cada5f19-6ee3-4f26-81a9-4f0c4bc9ca3e",
+        cmd: "/sbin/ping",
+        params: [ "-c", "5", "google.com" ],
+        status: "working"
+    }
+
+##### Sample calls
+
+* Sleep for 30 seconds
   `curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{ "Cmd": "/bin/sleep", "Params": ["30"] }' http://localhost:8000/payloads`
 
-* Ping
+* Ping google.com 5 times
   `curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{ "cmd": "/sbin/ping", "params": ["-c", "5", "google.com"] }' http://localhost:8000/payloads`
-
-## Installation
 
 #### GET /payloads
 
 Returns all payloads.
 
+##### Response
+
+    [
+        {
+            id: "cada5f19-6ee3-4f26-81a9-4f0c4bc9ca3e",
+            cmd: "/sbin/ping",
+            params: [ "-c", "5", "google.com" ],
+            status: "working"
+        }, {
+            id: "08ca0c54-c65f-4cb1-8fdb-46fbb6445e84",
+            cmd: "sleep",
+            params: [ "30" ],
+            status: "finished"
+        }, {
+            id: "edc72406-dfca-44ca-a1a3-c992a897491c",
+            cmd: "/bin/sleep",
+            params: [ "30" ],
+            status: "finished"
+        }, {
+            id: "b52a37ac-665b-44f6-9956-2317bc0354a2",
+            cmd: "/sbin/ping",
+            params: [ "-something-wrong", "5" ],
+            status: "error (exit status 64)"
+        }
+    ]
+
 #### Get /payloads/:id
 
 Returns single payload by its id.
+
+##### Response
+
+    {
+        id: "cada5f19-6ee3-4f26-81a9-4f0c4bc9ca3e",
+        cmd: "/sbin/ping",
+        params: [ "-c", "5", "google.com" ],
+        status: "working"
+    }
 
 ## Installation
 
