@@ -31,7 +31,7 @@ func AddPayload(w http.ResponseWriter, r *http.Request, enc encoder.Encoder, sto
 	decoder.Decode(&payload)
 
 	// Create and set a unique Id
-	p.Id = uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen)
+	payload.Id = uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen)
 
 	// Reset the status
 	payload.Status = "pending"
