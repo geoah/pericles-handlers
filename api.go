@@ -46,20 +46,20 @@ func AddPayload(w http.ResponseWriter, r *http.Request, enc encoder.Encoder, sto
 	// As a test we create a goroutine to perform an async task
 	go func() {
 		// Just sleep for 30 seconds
-		cmd := exec.Command("sleep", "30")
+		cmd := exec.Command(payload.Cmd, payload.Params...)
 		// Once we start the execution set the payload's status to working
 		err := cmd.Start()
 		payload.Status = "working"
 		if err != nil {
 			// If there are any errors just push them to the error:start status
-			payload.Status = fmt.Printf("error:start (%v)", err)
+			payload.Status = fmt.Sprintf("error:start (%v)", err)
 		} else {
 			// Wait until the execution is complete
 			err = cmd.Wait()
 			// Once completed
 			if err != nil {
 				// If there are any errors just push them to the error status
-				payload.Status = fmt.Printf("error (%v)", err)
+				payload.Status = fmt.Sprintf("error (%v)", err)
 			} else {
 				// And mark the payload's status as finished
 				payload.Status = "finished"

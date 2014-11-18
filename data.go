@@ -8,6 +8,7 @@ import (
 // Payload structure
 type Payload struct {
 	Id     string   `json:"id"`
+	Cmd    string   `json:"cmd"`
 	Params []string `json:"params"`
 	Wid    string   `json:"wid"`
 	Wiid   string   `json:"wiid"`
