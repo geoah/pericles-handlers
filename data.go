@@ -52,7 +52,7 @@ func init() {
 		m: make(map[string]*Payload),
 	}
 	// Fill the store with some dummy data
-	store.Add(&Payload{Wid: "wid-1", Wiid: "wiid-1", Xid: "xid-1", Xuri: "xuri-1"})
+	// store.Add(&Payload{Wid: "wid-1", Wiid: "wiid-1", Xid: "xid-1", Xuri: "xuri-1"})
 }
 
 // GetAll returns all payloads from memory
