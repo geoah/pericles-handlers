@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os/exec"
 
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/encoder"
@@ -32,12 +33,41 @@ func AddPayload(w http.ResponseWriter, r *http.Request, enc encoder.Encoder, sto
 	// Create and set a unique Id
 	p.Id = uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen)
 
+	// Reset the status
+	payload.Status = "pending"
+
 	// TODO Check for errors
 	id, err := store.Add(&payload)
 	if err != nil {
 		// TODO Provide more information on errors
 		return http.StatusConflict, encoder.Must(enc.Encode(NewError(500, "Something went wrong.")))
 	}
+
+	// As a test we create a goroutine to perform an async task
+	go func() {
+		// Just sleep for 30 seconds
+		cmd := exec.Command("sleep", "30")
+		// Once we start the execution set the payload's status to working
+		err := cmd.Start()
+		payload.Status = "working"
+		if err != nil {
+			// If there are any errors just push them to the error:start status
+			payload.Status = fmt.Printf("error:start (%v)", err)
+		} else {
+			// Wait until the execution is complete
+			err = cmd.Wait()
+			// Once completed
+			if err != nil {
+				// If there are any errors just push them to the error status
+				payload.Status = fmt.Printf("error (%v)", err)
+			} else {
+				// And mark the payload's status as finished
+				payload.Status = "finished"
+				store.Update(&payload)
+			}
+		}
+	}()
+
 	// Once payload is stored, redirect the user to the newly create object's URI
 	w.Header().Set("Location", fmt.Sprintf("/payloads/%s", id))
 	return http.StatusCreated, encoder.Must(enc.Encode(payload))

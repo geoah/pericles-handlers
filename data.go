@@ -35,6 +35,7 @@ type Store interface {
 	Get(id string) *Payload
 	GetAll() []*Payload
 	Add(p *Payload) (string, error)
+	Update(p *Payload) error
 }
 
 // Thread-safe in-memory map.
@@ -86,6 +87,7 @@ func (store *payloadStore) Add(p *Payload) (string, error) {
 	return p.Id, nil
 }
 
+// Update updates Payload and returns nil
 func (store *payloadStore) Update(p *Payload) error {
 	store.Lock()
 	defer store.Unlock()
