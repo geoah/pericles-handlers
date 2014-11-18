@@ -7,6 +7,7 @@ import (
 
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/encoder"
+	"github.com/twinj/uuid"
 )
 
 func GetPayloads(r *http.Request, enc encoder.Encoder, store Store) []byte {
@@ -27,6 +28,10 @@ func AddPayload(w http.ResponseWriter, r *http.Request, enc encoder.Encoder, sto
 	decoder := json.NewDecoder(r.Body)
 	var payload Payload
 	decoder.Decode(&payload)
+
+	// Create and set a unique Id
+	p.Id = uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen)
+
 	// TODO Check for errors
 	id, err := store.Add(&payload)
 	if err != nil {

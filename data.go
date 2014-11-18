@@ -3,9 +3,32 @@ package main
 import (
 	"fmt"
 	"sync"
-
-	"github.com/twinj/uuid"
 )
+
+// Payload structure
+type Payload struct {
+	Id     string   `json:"id"`
+	Params []string `json:"params"`
+	Wid    string   `json:"wid"`
+	Wiid   string   `json:"wiid"`
+	Xid    string   `json:"xid"`
+	Xuri   string   `json:"xuri"`
+	Status string   `json:"status"` // "pending", "working", "blocked", "error:*", "finished"
+}
+
+func (p *Payload) String() string {
+	return fmt.Sprintf("[%s] %s %s", p.Id, p.Wid, p.Wiid)
+}
+
+// Workflow structure
+type Workflow struct {
+	Id       string `json:"id"`
+	Workflow []struct {
+		Id     string   `json:"id"`
+		Params []string `json:"params"`
+		URL    string   `json:"url"`
+	} `json:"workflow"`
+}
 
 // The Store interface defines methods to manipulate items.
 type Store interface {
@@ -58,8 +81,6 @@ func (store *payloadStore) Get(id string) *Payload {
 func (store *payloadStore) Add(p *Payload) (string, error) {
 	store.Lock()
 	defer store.Unlock()
-	// Create a unique Id
-	p.Id = uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen)
 	// Store it
 	store.m[p.Id] = p
 	return p.Id, nil
@@ -76,28 +97,4 @@ func (store *payloadStore) Delete(id string) {
 	store.Lock()
 	defer store.Unlock()
 	delete(store.m, id)
-}
-
-// Payload structure
-type Payload struct {
-	Id     string   `json:"id"`
-	Params []string `json:"params"`
-	Wid    string   `json:"wid"`
-	Wiid   string   `json:"wiid"`
-	Xid    string   `json:"xid"`
-	Xuri   string   `json:"xuri"`
-}
-
-func (p *Payload) String() string {
-	return fmt.Sprintf("[%s] %s %s", p.Id, p.Wid, p.Wiid)
-}
-
-// Workflow structure
-type Workflow struct {
-	Id       string `json:"id"`
-	Workflow []struct {
-		Id     string   `json:"id"`
-		Params []string `json:"params"`
-		URL    string   `json:"url"`
-	} `json:"workflow"`
 }
